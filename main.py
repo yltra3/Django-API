@@ -3,7 +3,7 @@ import requests
 import sqlite3
 import json
 import datetime
-import re
+#import re
 #import base64
 from requests.auth import HTTPBasicAuth
 from os.path import abspath, dirname, join
@@ -28,6 +28,17 @@ SETTINGS = dict((key,val) for key, val in locals().items() if key.isupper())
 if not settings.configured:
     settings.configure(**SETTINGS)
 django.setup()
+from django.views.generic import TemplateView
+
+urlpatterns = [
+    # ...
+    # Route TemplateView to serve Swagger UI template.
+    #   * Provide `extra_context` with view name of `SchemaView`.
+    path('swagger-ui/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url':'openapi-schema'}
+    ), name='swagger-ui'),
+]
 
 def first():
     response = requests.get('http://yarlikvid.ru:9999/api/top-secret-data')
