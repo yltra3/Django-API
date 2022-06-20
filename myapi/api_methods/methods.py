@@ -3,10 +3,11 @@ import requests
 import sqlite3
 import json
 import datetime
-#import re
+import re
 #import base64
 from requests.auth import HTTPBasicAuth
 from os.path import abspath, dirname, join
+from models import DataBase
 
 import django
 from django.conf import settings
@@ -28,28 +29,17 @@ SETTINGS = dict((key,val) for key, val in locals().items() if key.isupper())
 if not settings.configured:
     settings.configure(**SETTINGS)
 django.setup()
-from django.views.generic import TemplateView
-
-urlpatterns = [
-    # ...
-    # Route TemplateView to serve Swagger UI template.
-    #   * Provide `extra_context` with view name of `SchemaView`.
-    path('swagger-ui/', TemplateView.as_view(
-        template_name='swagger-ui.html',
-        extra_context={'schema_url':'openapi-schema'}
-    ), name='swagger-ui'),
-]
 
 def first():
     response = requests.get('http://yarlikvid.ru:9999/api/top-secret-data')
     aList = json.loads(response.text)
     try:
-        sqlite_connection = sqlite3.connect('sqlite_python.db')
-        base = sqlite_connection.cursor()
-        base.execute("""DROP TABLE IF EXISTS sqlitedb_test""")
-        base.execute("""CREATE TABLE IF NOT EXISTS sqlitedb_test 
-        (id TEXT, encrypted_text TEXT, decrypted_text TEXT, created_at TEXT);""")
-        sqlite_connection.commit()
+        sqlite_connection = DataBase.connect('sqlite_python.db')
+        # base = sqlite_connection.cursor()
+        # base.execute("""DROP TABLE IF EXISTS sqlitedb_test""")
+        # base.execute("""CREATE TABLE IF NOT EXISTS sqlitedb_test
+        # (id TEXT, encrypted_text TEXT, decrypted_text TEXT, created_at TEXT);""")
+        # sqlite_connection.commit()
 
         print("База данных создана и успешно подключена к SQLite")
         i = 0
@@ -144,10 +134,10 @@ def third():
         #print(j_data)
         myjson = {
                 "name": "Михайлюк Владислав",
-                "repo_url": "https://github.com/test/test-repo",
+                "repo_url": "https://github.com/yltra3/test_casePY",
                 "result": j_data
                  }
-        post = requests.post('http://yarlikvid.ru:9999/api/decrypt', auth=HTTPBasicAuth('qummy', 'GiVEmYsecReT!'),
+        post = requests.post('http://yarlikvid.ru:9999/api/result', auth=HTTPBasicAuth('qummy', 'GiVEmYsecReT!'),
                          data=myjson)
     except sqlite3.Error as error:
         print("Ошибка при подключении к sqlite", error)
@@ -155,11 +145,9 @@ def third():
         if sqlite_connection:
             sqlite_connection.close()
             print("Соединение с SQLite закрыто")
-    return HttpResponse(status=201), decrypt
 
 def main():
-    second()
-    #third()
+    first()
 
 
 if __name__ == "__main__":
