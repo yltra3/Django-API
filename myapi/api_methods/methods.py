@@ -35,11 +35,11 @@ def first():
     aList = json.loads(response.text)
     try:
         sqlite_connection = DataBase.connect('sqlite_python.db')
-        # base = sqlite_connection.cursor()
-        # base.execute("""DROP TABLE IF EXISTS sqlitedb_test""")
-        # base.execute("""CREATE TABLE IF NOT EXISTS sqlitedb_test
-        # (id TEXT, encrypted_text TEXT, decrypted_text TEXT, created_at TEXT);""")
-        # sqlite_connection.commit()
+        base = sqlite_connection.cursor()
+        base.execute("""DROP TABLE IF EXISTS sqlitedb_test""")
+        base.execute("""CREATE TABLE IF NOT EXISTS sqlitedb_test
+        (id TEXT, encrypted_text TEXT, decrypted_text TEXT, created_at TEXT);""")
+        sqlite_connection.commit()
 
         print("База данных создана и успешно подключена к SQLite")
         i = 0
